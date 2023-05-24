@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pembangkit Bilangan Acak Semu</title>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script>
+		tailwind.config = {
+		  theme: {
+			extend: {
+			  colors: {
+				putih: '#F6F1F1',
+				langit: '#AFD3E2',
+				laut: '#19A7CE',
+				biru: '#146C94',
+				coklat: '#482121',
+				cokmu: '#7A3E3E',
+				rawa: '#41644A',
+				ramu: '#47A992',
+			  }
+			}
+		  }
+		}
+	  </script>
+	  <style >
+		@layer utilities {
+			.modal {
+			transition: opacity 0.25s ease;
+			}
+			body.modal-active {
+			overflow-x: hidden;
+			overflow-y: visible !important;
+			}
+			.modal-content .container {
+				margin: 16px;
+			}
+		}
+	  </style>
+</head>
+<body class="bg-putih">
+	<header class="bg-putih">
+		<nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+		  <div class="flex flex-1">
+			<a href="#" class="-m-1.5 p-1.5">
+			  <span class="sr-only">Tugas</span>
+			  <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="">
+			</a>
+		  </div>
+		  <div class="flex gap-x-12">
+			<a href="#" class="text-sm font-semibold leading-6 text-gray-900 hover:text-laut" >Dashboard</a>
+			<a href="tugas.html" class="text-sm font-semibold leading-6 text-gray-900 hover:text-laut" >Tugas</a>
+			<a href="#" class="text-sm font-semibold leading-6 text-gray-900 hover:text-laut" >Sistem Antrian</a>
+		  </div>
+		  <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+		  </div>
+		</nav>
+	  </header>
+	  
+	<div class="container mx-auto p-32">
+		<h1 class="text-3xl font-bold mb-4 text-coklat">PEMBANGKIT BILANGAN ACAK SEMU</h1>
+		<h1 class="text-2xl mb-8 text-coklat">LINEAR CONGRUENTIAL GENERATOR</h1>
+		<form class="mb-4">
+		<div class="mb-4">
+			<label class="mb-2 text-coklat" for="m">Modulus (m):</label>
+			<input type="number" id="m" name="m" required class="border border-gray-300 rounded py-1">
+		</div>
+		<div class="mb-4">
+			<label class="mb-2 text-coklat" for="a">Faktor Pengali (a):</label>
+			<input type="number" id="a" name="a" required class="border border-gray-300 rounded py-1">
+		</div>
+		<div class="mb-4">
+			<label class="mb-2 text-coklat" for="b">Inkremen (b):</label>
+			<input type="number" id="b" name="b" required class="border border-gray-300 rounded py-1">
+		</div>
+		<div class="mb-4">
+			<label class="mb-2 text-coklat" for="seed">Seed (X0):</label>
+			<input type="number" id="seed" name="seed" required class="border border-gray-300 rounded py-1">
+		</div>
+		<div class="mb-4">
+			<label class="mb-2 text-coklat" for="bil">Banyaknya Xn :</label>
+			<input type="number" id="bil" name="bil" required class="border border-gray-300 rounded py-1" placeholder="Masukkan data 1-100">
+		</div>
+		<button type="button" onclick="generate()" class="modal-open bg-ramu hover:bg-rawa text-putih px-4 py-2 rounded">Generate</button>
+		</form>
+		<div id="hasil"></div>
+		<div id="langkah"></div>
+  
+	<!--Modal-->
+<div class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center">
+	<div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+  
+	<div class="modal-container bg-putih w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+	  <div class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-putih text-sm z-50">
+		<svg class="fill-current text-putih" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+		  <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+		</svg>
+		<span class="text-sm">(Esc)</span>
+	  </div>
+  
+	  <!-- Add margin if you want to see some of the overlay behind the modal-->
+		<div class="modal modal-content py-4 text-left px-6">
+			<!--Title-->
+			<div class="flex justify-between items-center pb-3">
+				<p class="text-2xl font-bold text-coklat">Hasil : </p>
+			</div>
+
+			<!--Body-->
+			<div class="container mx-auto max-h-[500px]">
+				<div class="m-8 rounded overflow-hidden max-h-[500px]">
+					<div class="overflow-y-scroll pr-4">
+						<!-- accordion-tabs -->
+						<div id="accordion-tabs" class="space-y-2 max-h-[400px]"></div>
+					</div>
+				</div>
+			</div>
+
+
+			<!--Footer-->
+			<div class="flex justify-end pt-2">
+			<button class="modal-close px-4 bg-cokmu p-3 rounded-lg text-putih hover:bg-coklat">Keluar</button>
+			</div>
+		</div>
+	</div>
+  </div>
+  
+  
+	  
+	<script>
+		var openmodal = document.querySelectorAll('.modal-open')
+		for (var i = 0; i < openmodal.length; i++) {
+		  openmodal[i].addEventListener('click', function(event){
+			event.preventDefault()
+			toggleModal()
+		  })
+		}
+		
+		const overlay = document.querySelector('.modal-overlay')
+		overlay.addEventListener('click', toggleModal)
+		
+		var closemodal = document.querySelectorAll('.modal-close')
+		for (var i = 0; i < closemodal.length; i++) {
+		  closemodal[i].addEventListener('click', toggleModal)
+		}
+		
+		document.onkeydown = function(evt) {
+		  evt = evt || window.event
+		  var isEscape = false
+		  if ("key" in evt) {
+			isEscape = (evt.key === "Escape" || evt.key === "Esc")
+		  } else {
+			isEscape = (evt.keyCode === 27)
+		  }
+		  if (isEscape && document.body.classList.contains('modal-active')) {
+			toggleModal()
+		  }
+		};
+		
+		function toggleModal () {
+		  const body = document.querySelector('body')
+		  const modal = document.querySelector('.modal')
+		  modal.classList.toggle('opacity-0')
+		  modal.classList.toggle('pointer-events-none')
+		  body.classList.toggle('modal-active')
+		}
+	  
+		
+	</script>
+	  
+
+	<script src="script.js"></script>
+</body>
+</html>
